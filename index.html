@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizMaster</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 15px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 5px 20px #3335;
+        }
+
+        h1 {
+            color: #764ba2;
+        }
+
+        #question {
+            font-size: 21px;
+            margin: 25px 0;
+        }
+
+        .option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            background: #eee;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .option:hover {
+            background: #ddd;
+        }
+
+        .correct {
+            background: #90ee90 !important;
+        }
+
+        .wrong {
+            background: #ff9999 !important;
+        }
+
+        #nextBtn, #restartBtn {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 17px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🧠 QuizMaster</h1>
+    <p>Test Your Knowledge!</p>
+
+    <div id="quiz">
+        <p id="progress"></p>
+        <h2 id="question"></h2>
+        <div id="options"></div>
+        <button id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+
+    <div id="result" class="hidden">
+        <h2>🎉 Quiz Completed!</h2>
+        <h3 id="score"></h3>
+        <button id="restartBtn" onclick="restartQuiz()">Play Again</button>
+    </div>
+
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "What is the capital of Pakistan?",
+            options: ["Lahore", "Islamabad", "Karachi", "Multan"],
+            answer: "Islamabad"
+        },
+        {
+            question: "Which planet is called the Red Planet?",
+            options: ["Earth", "Mars", "Venus", "Jupiter"],
+            answer: "Mars"
+        },
+        {
+            question: "What is 10 + 15?",
+            options: ["20", "25", "30", "35"],
+            answer: "25"
+        },
+        {
+            question: "How many days are in a week?",
+            options: ["5", "6", "7", "8"],
+            answer: "7"
+        },
+        {
+            question: "Which is the largest ocean?",
+            options: ["Indian", "Pacific", "Atlantic", "Arctic"],
+            answer: "Pacific"
+        }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let answered = false;
+
+    function loadQuestion() {
+        answered = false;
+
+        let q = questions[current];
+
+        document.getElementById("progress").innerText =
+            "Question " + (current + 1) + " of " + questions.length;
+
+        document.getElementById("question").innerText = q.question;
+
+        let optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+
+        q.options.forEach(option => {
+            let btn = document.createElement("button");
+
+            btn.innerText = option;
+            btn.className = "option";
+
+            btn.onclick = function() {
+                checkAnswer(btn, option);
+            };
+
+            optionsDiv.appendChild(btn);
+        });
+
+        document.getElementById("nextBtn").innerText =
+            current === questions.length - 1 ? "See Results" : "Next";
+    }
+
+    function checkAnswer(button, selected) {
+        if (answered) return;
+
+        answered = true;
+
+        let correct = questions[current].answer;
+
+        if (selected === correct) {
+            score++;
+            button.classList.add("correct");
+        } else {
+            button.classList.add("wrong");
+
+            document.querySelectorAll(".option").forEach(btn => {
+                if (btn.innerText === correct) {
+                    btn.classList.add("correct");
+                }
+            });
+        }
+    }
+
+    function nextQuestion() {
+        if (!answered) {
+            alert("Please select an answer!");
+            return;
+        }
+
+        current++;
+
+        if (current < questions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById("quiz").classList.add("hidden");
+        document.getElementById("result").classList.remove("hidden");
+
+        document.getElementById("score").innerText =
+            "Your Score: " + score + " / " + questions.length;
+    }
+
+    function restartQuiz() {
+        current = 0;
+        score = 0;
+
+        document.getElementById("quiz").classList.remove("hidden");
+        document.getElementById("result").classList.add("hidden");
+
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
